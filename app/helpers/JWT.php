@@ -4,7 +4,8 @@ class JWT
 {
     // Generate JWT
     public static function generate($user)
-    {
+    {   
+        // Converts JSON into encoded string.
         $header = base64_encode(json_encode([
             "alg" => "HS256",
             "typ" => "JWT"

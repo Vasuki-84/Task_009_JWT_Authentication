@@ -49,7 +49,7 @@ class AuthController
         // Hash password
         $hashedPassword = password_hash(
             $password,
-            PASSWORD_DEFAULT
+            PASSWORD_DEFAULT   // Uses secure hashing algorithm automatically.
         );
 
         // Create user

@@ -14,7 +14,7 @@ class User
     // Find user by email
     public function findByEmail($email)
     {
-        $query = "SELECT * FROM {$this->table} WHERE email = ?";
+        $query = "SELECT  id, name, email, password  FROM {$this->table} WHERE email = ? LIMIT 1";
 
         $stmt = mysqli_prepare($this->conn, $query);
 

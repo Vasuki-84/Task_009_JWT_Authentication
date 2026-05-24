@@ -33,7 +33,7 @@ class JsonMiddleware
 
                 exit;
             }
-
+            // reads raw data in postman body and stores in $input variable
             $input = file_get_contents(
                 "php://input"
             );
@@ -50,10 +50,13 @@ class JsonMiddleware
 
                 exit;
             }
-
+           // converts JSON to PHP and converts into associative array
+           //   [
+           //   "name" => "John"
+           //  ]
             $data = json_decode($input, true);
 
-            // Invalid JSON
+            // works on Last executed json_decode() or json_encode()
             if (
                 json_last_error() !== JSON_ERROR_NONE
             ) {

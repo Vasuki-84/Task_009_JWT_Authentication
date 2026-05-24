@@ -17,13 +17,13 @@ require_once "../app/models/Patient.php";
 require_once "../app/controllers/AuthController.php";
 require_once "../app/controllers/PatientController.php";
 
-// Run JSON middleware
+// Run JSON middleware - Ensures request is JSON
 JsonMiddleware::handle();
 
-// Database connection
+// Database connection - Connects MySQL using  mysqli
 $db = (new Database())->connect();
 
-// Initialize router
+// Initialize router - Used to match URL → controller function
 $router = new Router();
 
 // Controllers
@@ -69,7 +69,7 @@ $router->add(
     [$patientController, 'delete']
 );
 
-// Get URI
+// Gets URL path from browser/Postman
 $requestUri = parse_url(
     $_SERVER['REQUEST_URI'],
     PHP_URL_PATH
@@ -81,7 +81,7 @@ $requestUri = str_replace(
     $requestUri
 );
 
-// Dispatch route
+// FINAL step: 1. finds matching route, 2.calls controller method 3.returns response
 $router->dispatch(
     $requestUri,
     $_SERVER['REQUEST_METHOD']

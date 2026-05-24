@@ -12,7 +12,7 @@ class Database
         if (!file_exists($envPath)) {
             die(".env file not found");
         }
-
+        // change into PHP array 
         $env = parse_ini_file($envPath);
 
         if (!$env) {
@@ -25,7 +25,7 @@ class Database
         $pass = $env['DB_PASS'] ?? '';
         $db   = $env['DB_NAME'] ?? '';
 
-        // Default MySQL port (WAMP/XAMPP)
+        // Default MySQL port (WAMP)
         $port = 3308;
 
         // Create connection
