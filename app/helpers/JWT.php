@@ -18,13 +18,15 @@ class JWT
             "exp" => time() + $_ENV['JWT_EXPIRY']
         ]));
 
+        // Hash-based Message Authentication Code
+        // use secret key to create signature
         $signature = hash_hmac(
             'sha256',
             "$header.$payload",
             $_ENV['JWT_SECRET'],
             true
         );
-
+        // convert into readble string
         $signature = base64_encode($signature);
 
         return "$header.$payload.$signature";
@@ -43,7 +45,7 @@ class JWT
 
         $validSignature = base64_encode(
             hash_hmac(
-                'sha256',
+                'sha256',  // To create secure signature
                 "$header.$payload",
                 $_ENV['JWT_SECRET'],
                 true

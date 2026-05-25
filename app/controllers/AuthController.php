@@ -11,7 +11,7 @@ class AuthController
 
     // Register User
     public function register()
-    {
+    {   // receives data from postman 
         $data = $_REQUEST['body'];
 
         $name = $data['name'] ?? '';
@@ -52,7 +52,7 @@ class AuthController
             PASSWORD_DEFAULT   // Uses secure hashing algorithm automatically.
         );
 
-        // Create user
+        // Create user navigates to user.php
         $created = $this->userModel->create(
             $name,
             $email,

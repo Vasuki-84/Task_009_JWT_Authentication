@@ -96,5 +96,22 @@ class Patient
 
         return mysqli_stmt_execute($stmt);
     }
+
+      // Find patient by ID
+    public function findById($id)
+    {
+        $query = "SELECT * FROM {$this->table} WHERE id = ?";
+
+        $stmt = mysqli_prepare($this->conn, $query);
+
+        mysqli_stmt_bind_param($stmt, "i", $id);
+
+        mysqli_stmt_execute($stmt);
+
+        $result = mysqli_stmt_get_result($stmt);
+
+        return mysqli_fetch_assoc($result);
+    }
+
   
 }

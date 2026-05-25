@@ -6,15 +6,12 @@ class Database
 
     public function connect()
     {
-        // Load .env file
         $envPath = __DIR__ . '/../../.env';
 
         if (!file_exists($envPath)) {
             die(".env file not found");
         }
-        // change into PHP array 
         $env = parse_ini_file($envPath);
-
         if (!$env) {
             die("Failed to read .env file");
         }
