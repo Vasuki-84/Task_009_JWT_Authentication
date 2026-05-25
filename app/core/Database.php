@@ -6,29 +6,21 @@ class Database
 
     public function connect()
     {
-        $envPath = __DIR__ . '/../../.env';
+        $host = $_ENV['DB_HOST'];
+        $user = $_ENV['DB_USER'];
+        $pass = $_ENV['DB_PASS'];
+        $db   = $_ENV['DB_NAME'];
 
-        if (!file_exists($envPath)) {
-            die(".env file not found");
-        }
-        $env = parse_ini_file($envPath);
-        if (!$env) {
-            die("Failed to read .env file");
-        }
-
-        // Read values from .env
-        $host = $env['DB_HOST'] ?? 'localhost';
-        $user = $env['DB_USER'] ?? 'root';
-        $pass = $env['DB_PASS'] ?? '';
-        $db   = $env['DB_NAME'] ?? '';
-
-        // Default MySQL port (WAMP)
         $port = 3308;
 
-        // Create connection
-        $this->conn = mysqli_connect($host, $user, $pass, $db, $port);
+        $this->conn = mysqli_connect(
+            $host,
+            $user,
+            $pass,
+            $db,
+            $port
+        );
 
-        // Check connection
         if (!$this->conn) {
             die("DB Connection Failed: " . mysqli_connect_error());
         }
@@ -36,3 +28,5 @@ class Database
         return $this->conn;
     }
 }
+
+?>
