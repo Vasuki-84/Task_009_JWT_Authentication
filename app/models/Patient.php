@@ -12,11 +12,17 @@ class Patient
     }
 
     // Get all patients
-    public function getAll()
+    public function getAll($userId)
     {
-        $query = "SELECT * FROM {$this->table}";
+        $query = "SELECT * FROM {$this->table} WHERE user_id = ?";
 
-        $result = mysqli_query($this->conn, $query);
+        $stmt = mysqli_prepare($this->conn, $query);
+
+        mysqli_stmt_bind_param($stmt, "i", $userId);
+
+        mysqli_stmt_execute($stmt);
+
+        $result = mysqli_stmt_get_result($stmt);
 
         $patients = [];
 
@@ -30,33 +36,34 @@ class Patient
 
     // Create patient
     public function create($data)
-    {
-        $query = "INSERT INTO {$this->table}
-                  (
-                    name,
-                    age,
-                    gender,
-                    phone,
-                    address
-                  )
-                  VALUES
-                  (?, ?, ?, ?, ?)";
+{
+    $query = "INSERT INTO {$this->table}
+              (
+                user_id,
+                name,
+                age,
+                gender,
+                phone,
+                address
+              )
+              VALUES
+              (?, ?, ?, ?, ?, ?)";
 
-        $stmt = mysqli_prepare($this->conn, $query);
+    $stmt = mysqli_prepare($this->conn, $query);
 
-        mysqli_stmt_bind_param(
-            $stmt,
-            "sisss",
-            $data['name'],
-            $data['age'],
-            $data['gender'],
-            $data['phone'],
-            $data['address']
-        );
+    mysqli_stmt_bind_param(
+        $stmt,
+        "isisss",
+        $data['user_id'],
+        $data['name'],
+        $data['age'],
+        $data['gender'],
+        $data['phone'],
+        $data['address']
+    );
 
-        return mysqli_stmt_execute($stmt);
-    }
-
+    return mysqli_stmt_execute($stmt);
+}
     // Update patient
     public function update($id, $data)
     {
@@ -98,20 +105,30 @@ class Patient
     }
 
       // Find patient by ID
-    public function findById($id)
-    {
-        $query = "SELECT * FROM {$this->table} WHERE id = ?";
+     public function findById($id, $userId)
+{
+    $query = "SELECT * FROM {$this->table}
+              WHERE id = ?
+              AND user_id = ?";
 
-        $stmt = mysqli_prepare($this->conn, $query);
+    $stmt = mysqli_prepare(
+        $this->conn,
+        $query
+    );
 
-        mysqli_stmt_bind_param($stmt, "i", $id);
+    mysqli_stmt_bind_param(
+        $stmt,
+        "ii",
+        $id,
+        $userId
+    );
 
-        mysqli_stmt_execute($stmt);
+    mysqli_stmt_execute($stmt);
 
-        $result = mysqli_stmt_get_result($stmt);
+    $result = mysqli_stmt_get_result($stmt);
 
-        return mysqli_fetch_assoc($result);
-    }
+    return mysqli_fetch_assoc($result);
+}
 
   
 }

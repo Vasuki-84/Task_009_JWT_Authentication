@@ -37,7 +37,8 @@ class Router
 
                 // Remove full match
                 array_shift($matches);
-
+                
+                // Array Destructuring
                 [$controller, $method] = $route['action'];
 
                 // Call controller method

@@ -10,24 +10,27 @@ class PatientController
     }
 
     // Get all patients
-    public function index()
-    {
-        AuthMiddleware::handle();
+     public function index()
+{
+    AuthMiddleware::handle();
 
-        $patients = $this->patientModel->getAll();
+    $userId = $_REQUEST['user']['user_id'];
 
-        echo json_encode([
-            "status" => true,
-            "data" => $patients
-        ]);
-    }
+    $patients = $this->patientModel->getAll($userId);
 
+    echo json_encode([
+        "status" => true,
+        "data" => $patients
+    ]);
+}
     // Create patient
     public function store()
     {
         AuthMiddleware::handle();
 
         $data = $_REQUEST['body'];
+
+        $data['user_id'] = $_REQUEST['user']['user_id'];
 
         if (
             empty($data['name']) ||
@@ -74,7 +77,12 @@ class PatientController
 
         $data = $_REQUEST['body'];
 
-        $patient = $this->patientModel->findById($id);
+       $userId = $_REQUEST['user']['user_id'];
+
+       $patient = $this->patientModel->findById(
+       $id,
+       $userId
+       );
 
         if (!$patient) {
 
@@ -113,7 +121,12 @@ class PatientController
     {
         AuthMiddleware::handle();
 
-        $patient = $this->patientModel->findById($id);
+        $userId = $_REQUEST['user']['user_id'];
+
+        $patient = $this->patientModel->findById(
+        $id,
+        $userId
+     );
 
         if (!$patient) {
 

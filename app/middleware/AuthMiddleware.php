@@ -39,7 +39,7 @@ class AuthMiddleware
 
             exit;
         }
-
+        // token after login
         $token = $matches[1];
 
         // Validate token
