@@ -109,11 +109,78 @@ class AuthController
         // Generate JWT
         $token = JWT::generate($user);
 
-        echo json_encode([
-            "status" => true,
-            "message" => "Login successful",
-            "token" => $token,
-            "expires_in" => $_ENV['JWT_EXPIRY']
+        // Generate refresh token
+        $refreshToken = bin2hex(random_bytes(40));
+
+        $expiry = date("Y-m-d H:i:s",  time() + $_ENV['REFRESH_TOKEN_EXPIRY']);
+
+        $this->userModel->saveRefreshToken($user['id'],$refreshToken, $expiry);
+
+        // SET HTTP ONLY COOKIE
+        setcookie("refresh_token",$refreshToken,
+        [
+        "expires" => time() + $_ENV['REFRESH_TOKEN_EXPIRY'],
+        "path" => "/",
+        "httponly" => true
         ]);
+
+        // Postman Response 
+       echo json_encode([
+       "status" => true,
+       "message" => "Login successful",
+
+       "access_token" => $token,
+
+        "access_token_expires_in" =>
+        $_ENV['JWT_EXPIRY'],
+
+        "refresh_token" => $refreshToken,
+
+        "refresh_token_expires_in" =>
+        $_ENV['REFRESH_TOKEN_EXPIRY']
+    ]);
     }
+
+    public function refresh(){
+    $refreshToken =
+        $_COOKIE['refresh_token'] ?? null;
+
+    if (!$refreshToken) {
+
+        http_response_code(401);
+
+        echo json_encode([
+            "status" => false,
+            "message" => "Refresh token missing"
+        ]);
+
+        return;
+    }
+
+    $user = $this->userModel
+        ->findByRefreshToken($refreshToken);
+
+    if (!$user) {
+
+        http_response_code(401);
+
+        echo json_encode([
+            "status" => false,
+            "message" => "Invalid or expired refresh token"
+        ]);
+
+        return;
+    }
+
+    // Generate new access token
+    $newAccessToken = JWT::generate($user);
+ 
+   echo json_encode([
+        "status" => true,
+        "message" => "Token refreshed successfully",
+        "access_token" => $newAccessToken,
+        "access_token_expires_in" => $_ENV['JWT_EXPIRY']
+    ]);
+    }
+
 }

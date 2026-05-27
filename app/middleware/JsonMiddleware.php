@@ -11,11 +11,13 @@ class JsonMiddleware
         // Allow only JSON for POST, PUT, PATCH
         if (
             in_array(
-                $method,
-                ['POST', 'PUT', 'PATCH']
-            )
-        ) {
-
+             $method,
+             ['POST', 'PUT', 'PATCH']
+             )
+            &&
+            $_SERVER['REQUEST_URI']
+            !== '/task_009/public/api/token/refresh'
+       ) {
             if (
                 !isset($_SERVER['CONTENT_TYPE']) ||
                 strpos(
@@ -39,8 +41,8 @@ class JsonMiddleware
             );
 
             // Empty body
-            if (empty($input)) {
-
+            if ( empty($input)) 
+            {
                 http_response_code(400);
 
                 echo json_encode([

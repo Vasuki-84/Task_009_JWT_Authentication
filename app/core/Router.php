@@ -19,7 +19,7 @@ class Router
     {
         foreach ($this->routes as $route) {
 
-            // Convert {id} into regex pattern
+            // Dynamic route parameter conversion => /api/patients/([0-9]+)
             $pattern = preg_replace(
                 '#\{id\}#',
                 '([0-9]+)',

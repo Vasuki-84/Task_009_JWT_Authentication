@@ -34,14 +34,7 @@ class User
     // Create new user
     public function create($name, $email, $password)
     {
-        $query = "INSERT INTO {$this->table}
-                  (
-                    name,
-                    email,
-                    password
-                  )
-                  VALUES
-                  (?, ?, ?)";
+        $query = "INSERT INTO {$this->table}(name,email,password)VALUES (?, ?, ?)";
 
         $stmt = mysqli_prepare($this->conn, $query);
 
@@ -55,4 +48,40 @@ class User
 
         return mysqli_stmt_execute($stmt);
     }
+    
+   // Save refresh token & its expiry time in database
+   public function saveRefreshToken($userId, $refreshToken, $expiry)
+   {
+    $query = "UPDATE {$this->table} SET refresh_token = ?,refresh_token_expiry = ? WHERE id = ?";
+
+    $stmt = mysqli_prepare( $this->conn, $query);
+
+    mysqli_stmt_bind_param(
+        $stmt,
+        "ssi",
+        $refreshToken,
+        $expiry,
+        $userId
+    );
+
+    return mysqli_stmt_execute($stmt);
+   }
+
+  // Find user by refresh token
+  public function findByRefreshToken($refreshToken)
+  {
+    $query = "SELECT * FROM {$this->table} WHERE refresh_token = ? AND refresh_token_expiry > NOW() LIMIT 1";
+
+    $stmt = mysqli_prepare( $this->conn,  $query );
+
+    mysqli_stmt_bind_param( $stmt, "s", $refreshToken );
+
+    mysqli_stmt_execute($stmt);
+
+    $result = mysqli_stmt_get_result($stmt);
+
+    return mysqli_fetch_assoc($result);
+   }
+   
+ 
 }

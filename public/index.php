@@ -81,8 +81,20 @@ $requestUri = str_replace(
     $requestUri
 );
 
+// REFRESH token route
+$router->add(
+    'POST',
+    '/api/token/refresh',
+    [$authController, 'refresh']
+);
+
 // FINAL step: 1. finds matching route, 2.calls controller method 3.returns response
 $router->dispatch(
     $requestUri,
     $_SERVER['REQUEST_METHOD']
 );
+
+
+
+
+?>
