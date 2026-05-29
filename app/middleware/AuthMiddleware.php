@@ -42,6 +42,7 @@ class AuthMiddleware
         // token after login
         $token = $matches[1];
 
+        
         // Validate token
         $user = JWT::validate($token);
 

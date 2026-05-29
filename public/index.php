@@ -88,6 +88,12 @@ $router->add(
     [$authController, 'refresh']
 );
 
+$router->add(
+    'POST',
+    '/api/logout',
+    [$authController, 'logout']
+);
+
 // FINAL step: 1. finds matching route, 2.calls controller method 3.returns response
 $router->dispatch(
     $requestUri,

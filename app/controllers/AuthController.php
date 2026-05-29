@@ -109,14 +109,16 @@ class AuthController
         // Generate JWT
         $token = JWT::generate($user);
 
-        // Generate refresh token
+        // Generate refresh token:
+        // bin2hex() -> Converts binary → readable string
+        // random_bytes(40) -> PHP's built-in cryptographic function,40 bytes secure random binary data,40 bytes = 320 bits random data (more secure)
         $refreshToken = bin2hex(random_bytes(40));
 
         $expiry = date("Y-m-d H:i:s",  time() + $_ENV['REFRESH_TOKEN_EXPIRY']);
-
+        // store refresh token in databases
         $this->userModel->saveRefreshToken($user['id'],$refreshToken, $expiry);
 
-        // SET HTTP ONLY COOKIE
+        // Store refresh token in COOKIE
         setcookie("refresh_token",$refreshToken,
         [
         "expires" => time() + $_ENV['REFRESH_TOKEN_EXPIRY'],
@@ -134,10 +136,6 @@ class AuthController
         "access_token_expires_in" =>
         $_ENV['JWT_EXPIRY'],
 
-        "refresh_token" => $refreshToken,
-
-        "refresh_token_expires_in" =>
-        $_ENV['REFRESH_TOKEN_EXPIRY']
     ]);
     }
 
@@ -182,5 +180,60 @@ class AuthController
         "access_token_expires_in" => $_ENV['JWT_EXPIRY']
     ]);
     }
+
+    // LOGOUT user
+    public function logout()
+    {
+    $refreshToken =
+        $_COOKIE['refresh_token'] ?? null;
+
+    if (!$refreshToken) {
+
+        http_response_code(401);
+
+        echo json_encode([
+            "status" => false,
+            "message" => "Refresh token missing"
+        ]);
+
+        return;
+    }
+
+    // Find user using refresh token
+    $user = $this->userModel
+        ->findByRefreshToken($refreshToken);
+
+    if (!$user) {
+
+        http_response_code(401);
+
+        echo json_encode([
+            "status" => false,
+            "message" => "Invalid refresh token"
+        ]);
+
+        return;
+    }
+
+    // Remove refresh token from DB
+    $this->userModel
+        ->removeRefreshToken($user['id']);
+
+    // Remove cookie
+    setcookie(
+        "refresh_token",
+        "",
+        [
+            "expires" => time() - 3600,
+            "path" => "/",
+            "httponly" => true
+        ]
+    );
+
+    echo json_encode([
+        "status" => true,
+        "message" => "Logout successful"
+    ]);
+   }
 
 }

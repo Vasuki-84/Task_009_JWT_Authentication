@@ -67,7 +67,8 @@ class User
     return mysqli_stmt_execute($stmt);
    }
 
-  // Find user by refresh token
+  // Find user by refresh token:
+  
   public function findByRefreshToken($refreshToken)
   {
     $query = "SELECT * FROM {$this->table} WHERE refresh_token = ? AND refresh_token_expiry > NOW() LIMIT 1";
@@ -81,6 +82,18 @@ class User
     $result = mysqli_stmt_get_result($stmt);
 
     return mysqli_fetch_assoc($result);
+   }
+
+// Logout: REmove refresh token 
+   public function removeRefreshToken($userId)
+   {
+    $query = "UPDATE {$this->table} SET refresh_token = NULL, refresh_token_expiry = NULL WHERE id = ?";
+
+    $stmt = mysqli_prepare( $this->conn, $query);
+
+    mysqli_stmt_bind_param( $stmt, "i", $userId);
+
+    return mysqli_stmt_execute($stmt);
    }
    
  
